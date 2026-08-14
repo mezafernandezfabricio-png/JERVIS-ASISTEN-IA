@@ -35,4 +35,6 @@ patch_main.py
 .vscode/
 .idea/
 .DS_Store
-Thumbs.db
+# Dist installer (242MB - local distribution only)
+DIST_INSTALADOR_ASISTENTE_XDS/
+
