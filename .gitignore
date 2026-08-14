@@ -1,0 +1,38 @@
+# Environments
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*$py.class
+# Config and Sensitive Files
+config/api_keys.json
+config/rules.json
+config/pc_index.json
+custom_tools.json
+
+# Backups & Temp
+backups/
+*.bak
+
+# Builds & PyInstaller
+dist/
+build/
+Instalador_Final/
+
+# Logs
+*.log
+jarvis.log
+
+# Scratch scripts
+patch_main.py
+
+# IDE / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

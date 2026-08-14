@@ -1,0 +1,57 @@
+{
+  "identity": {
+    "honorific": {
+      "value": "Se\u00f1or",
+      "updated": "2026-05-17"
+    },
+    "name_spelling": {
+      "value": "T\u00fapac (with accent on U)",
+      "updated": "2026-05-17"
+    },
+    "city": {
+      "value": "Lima, Peru",
+      "updated": "2026-05-17"
+    },
+    "creator": {
+      "value": "Xdata Security"
+    },
+    "name": {
+      "value": "X"
+    }
+  },
+  "preferences": {
+    "address_form": {
+      "value": "Se\u00f1or",
+      "updated": "2026-05-17"
+    },
+    "language": {
+      "value": "spanish"
+    },
+    "vision_guardian_auto_enable": {
+      "value": "true"
+    }
+  },
+  "projects": {
+    "code_project_status": {
+      "value": "User deleted the entire code project.",
+      "updated": "2026-05-17"
+    }
+  },
+  "relationships": {
+    "sister_name": {
+      "value": "Lucy"
+    }
+  },
+  "wishes": {},
+  "notes": {
+    "uninstaller_behavior_rule": {
+      "value": "If uninstaller window appears: if user says 'cancelar', close the window. If user says 'continuar', press 'enter' to confirm uninstallation."
+    },
+    "uninstaller_behavior_rule_override": {
+      "value": "OVERRIDE: If user says 'continuar' during uninstallation, automatically execute 'confirmar' action (press Enter) without waiting for further instruction. If user says 'cancelar', close the window."
+    },
+    "wake_word_rule": {
+      "value": "STRICT WAKE WORD RULE: Only respond if the text or audio explicitly contains 'JARVIS'. Otherwise, remain completely silent and do not execute any tools or respond in any way."
+    }
+  }
+}

@@ -1,0 +1,77 @@
+# --- Core & GUI ---
+PyQt6
+PyQt6-WebEngine
+qtawesome
+pyinstaller
+
+# --- Google Gemini & LLM AI ---
+google-genai
+google-api-python-client
+google-auth-oauthlib
+openai
+
+# --- Audio & Speech (Streaming & Offline) ---
+sounddevice
+pyaudio
+vosk
+SpeechRecognition
+edge-tts
+gtts
+pygame
+webrtcvad-wheels
+
+# --- Computer Vision & Screen ---
+opencv-python
+mediapipe
+mss
+Pillow
+
+# --- Windows Automation & Control ---
+pyautogui
+pyperclip
+pygetwindow
+pywinauto
+pywin32
+pycaw
+comtypes
+winshell
+win10toast
+send2trash
+keyboard
+psutil
+
+# --- Web, Networking & Communications ---
+requests
+urllib3
+beautifulsoup4
+duckduckgo-search
+playwright
+yt-dlp
+youtube-transcript-api
+speedtest-cli
+spotipy
+pyTelegramBotAPI
+openrgb-python
+flask
+flask-socketio
+eventlet
+fastapi
+uvicorn
+python-multipart
+
+# --- Document Processing & Utilities ---
+python-docx
+docx2txt
+python-pptx
+fpdf
+openpyxl
+pandas
+numpy
+matplotlib
+qrcode[pil]
+json5
+cryptography
+pyunpack
+patool
+rarfile
+rich

@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JARVIS Neural Core</title>
+    <!-- Material Symbols & Sora Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Sora:wght@600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <style>
+    :root {
+        --primary-fixed: #f59e0b;
+        --primary-fixed-dim: #78350f;
+        --primary-glow: rgba(245, 158, 11, 0.28);
+        --primary-ring-1-bg: rgba(245, 158, 11, 0.16);
+        --primary-ring-2-bg: rgba(245, 158, 11, 0.10);
+        --energy-level: 1.0;
+        --glow-intensity: 0.45;
+    }
+
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .items-start { align-items: flex-start; }
+    .items-center { align-items: center; }
+    .justify-center { justify-content: center; }
+    .relative { position: relative; }
+    .absolute { position: absolute; }
+    .font-mono { font-family: 'JetBrains Mono', Consolas, Monaco, 'Courier New', monospace; }
+    .font-bold { font-weight: bold; }
+    .opacity-50 { opacity: 0.5; }
+    .text-\[8px\] { font-size: 8px; }
+    .text-sm { font-size: 12px; }
+    .text-2xl { font-size: 24px; }
+    .tracking-widest { letter-spacing: 0.15em; }
+    .mt-0\.5 { margin-top: 2px; }
+    .px-2 { padding-left: 8px; padding-right: 8px; }
+    .py-2 { padding-top: 8px; padding-bottom: 8px; }
+    .w-\[74px\] { width: 74px; }
+    .h-\[74px\] { height: 74px; }
+    .w-\[96px\] { width: 96px; }
+    .h-\[96px\] { height: 96px; }
+    .w-\[78px\] { width: 78px; }
+    .h-\[78px\] { height: 78px; }
+    .rounded-full { border-radius: 9999px; }
+    .bg-\[var\(--primary-fixed\)\]\/20 { background-color: var(--primary-ring-1-bg); }
+    .bg-\[var\(--primary-fixed\)\]\/15 { background-color: var(--primary-ring-2-bg); }
+
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        background: transparent !important;
+        overflow: hidden;
+        font-family: 'JetBrains Mono', Consolas, Monaco, 'Courier New', monospace;
+        user-select: none;
+    }
+
+    #neural-core-container {
+        width: 100vw;
+        height: 100vh;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent !important;
+        overflow: hidden;
+    }
+
+    #orb-wrapper {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%; /* Ajustado al 100% para que use todo el espacio asignado por PyQt */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        overflow: hidden;
+        background: transparent !important;
+    }
+
+    #sphere-canvas {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: 10;
+        cursor: pointer;
+        /* El resplandor principal de la esfera */
+        filter: drop-shadow(0 0 35px var(--primary-glow));
+        transition: filter 0.3s ease-out;
+    }
+
+    .ambient-glow,
+    .flare,
+    .reflection,
+    .side-glow,
+    .glow-side,
+    .side-light,
+    .orb-reflection,
+    .orb-flare,
+    .left-glow,
+    .right-glow {
+        display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+        transform: none !important;
+        filter: none !important;
+    }
+
+    #synaptic-stats {
+        position: absolute;
+        top: 25px;
+        left: 25px;
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: var(--primary-fixed);
+        opacity: 0.75;
+        pointer-events: none;
+        text-shadow: 0 0 8px var(--primary-glow);
+    }
+
+    #bottom-mic-panel {
+        display: none !important; /* Mantenido oculto como pediste */
+    }
+    </style>
+</head>
+<body>
+    <div id="neural-core-container">
+        
+        <div id="orb-wrapper">
+            <canvas id="sphere-canvas"></canvas>
+            <div class="ambient-glow" id="ambient-halo"></div>
+        </div>
+
+        <div id="synaptic-stats" class="font-mono">
+            <div class="flex flex-col items-start">
+                <span class="opacity-50 text-[8px] tracking-widest">Core Sync</span>
+                <span id="stat-sync" class="font-bold text-sm mt-0.5">99.8%</span>
+            </div>
+            <div class="flex flex-col items-start">
+                <span class="opacity-50 text-[8px] tracking-widest">Synaptic Load</span>
+                <span id="stat-load" class="font-bold text-sm mt-0.5">8 ms</span>
+            </div>
+            <div class="flex flex-col items-start">
+                <span class="opacity-50 text-[8px] tracking-widest">Status</span>
+                <span id="stat-status" class="font-bold text-sm mt-0.5">ONLINE</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SCRIPT DEL NÚCLEO NEURONAL (ESFERA 3D) -->
+      <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
+    <script>
+        const canvas = document.getElementById('sphere-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Variables de estado del sistema
+        let width, height, cx, cy;
+        let particles = [];
+        const numParticles = 450; // Cantidad de nodos neuronales
+        let baseRadius = 220;     // Tamaño base de la esfera
+        let targetRadius = 220;
+        
+        // Variables de interacción y estado
+        let angleX = 0;
+        let angleY = 0;
+        let rotationSpeed = 0.002;
+        let state = "LISTENING";
+        let currentVolume = 0;
+        let targetVolume = 0;
+        
+        // Colores por defecto (Se actualizarán si Python inyecta un nuevo tema)
+        let themeColor = "#f59e0b"; // Gold por defecto
+        
+        // Función para adaptar colores RGB a partir de HEX
+        function hexToRgb(hex) {
+            let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : { r: 245, g: 158, b: 11 };
+        }
+
+        // Redimensionar canvas adaptándose a pantallas HD
+        function resize() {
+            width = canvas.parentElement.clientWidth;
+            height = canvas.parentElement.clientHeight;
+            canvas.width = width * window.devicePixelRatio;
+            canvas.height = height * window.devicePixelRatio;
+            cx = canvas.width / 2;
+            cy = canvas.height / 2;
+            
+            // Escalar el tamaño de la esfera dependiendo de la resolución
+            let minDim = Math.min(width, height);
+            baseRadius = minDim * 0.35 * window.devicePixelRatio; 
+            targetRadius = baseRadius;
+        }
+
+        window.addEventListener('resize', resize);
+
+        // Inicialización de la esfera usando la distribución de Fibonacci
+        function initSphere() {
+            particles = [];
+            const phi = Math.PI * (3 - Math.sqrt(5)); // Ángulo áureo
+            
+            for (let i = 0; i < numParticles; i++) {
+                let y = 1 - (i / (numParticles - 1)) * 2; // y va de 1 a -1
+                let radiusAtY = Math.sqrt(1 - y * y); // radio en la altura y
+                let theta = phi * i; // ángulo áureo incrementado
+                
+                let x = Math.cos(theta) * radiusAtY;
+                let z = Math.sin(theta) * radiusAtY;
+                
+                particles.push({
+                    ox: x, oy: y, oz: z,  // Coordenadas originales
+                    x: x, y: y, z: z,     // Coordenadas actuales
+                    pulse: Math.random() * Math.PI * 2 // Desfase para latido individual
+                });
+            }
+        }
+
+        // Bucle principal de renderizado
+        function animate() {
+            // Suavizado del volumen para reactividad de audio
+            currentVolume += (targetVolume - currentVolume) * 0.15;
+            
+            // Aplicar volumen al radio de la esfera
+            let dynamicRadius = targetRadius + (currentVolume * targetRadius * 0.3);
+            
+            // Limpiar canvas (fondo transparente)
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Rotación global basada en el estado
+            if (state === "THINKING") {
+                angleX += 0.008;
+                angleY += 0.012;
+            } else if (state === "SPEAKING") {
+                angleX += 0.003;
+                angleY += 0.005;
+            } else if (state === "MUTED") {
+                angleX += 0.0005;
+                angleY += 0.001;
+            } else {
+                angleX += rotationSpeed;
+                angleY += rotationSpeed * 1.2;
+            }
+
+            let cosX = Math.cos(angleX);
+            let sinX = Math.sin(angleX);
+            let cosY = Math.cos(angleY);
+            let sinY = Math.sin(angleY);
+
+            // Proyectar partículas al espacio 3D rotado
+            let projected = [];
+            let rgb = hexToRgb(themeColor);
+
+            particles.forEach((p, index) => {
+                // Rotación en Y
+                let x1 = p.ox * cosY - p.oz * sinY;
+                let z1 = p.oz * cosY + p.ox * sinY;
+                // Rotación en X
+                let y1 = p.oy * cosX - z1 * sinX;
+                let z2 = z1 * cosX + p.oy * sinX;
+
+                p.x = x1;
+                p.y = y1;
+                p.z = z2;
+
+                // Animación de latido individual
+                p.pulse += 0.05;
+                let microPulse = 1 + Math.sin(p.pulse) * 0.05;
+
+                // Proyección a pantalla 2D
+                let scaleProject = 300 / (300 - p.z * 100); 
+                let px = cx + p.x * dynamicRadius * scaleProject * microPulse;
+                let py = cy + p.y * dynamicRadius * scaleProject * microPulse;
+                
+                projected.push({ px, py, z: p.z, id: index });
+            });
+
+            // Ordenar por Z para dibujar las traseras primero (Profundidad)
+            projected.sort((a, b) => a.z - b.z);
+
+            // Dibujar Conexiones (Plexus effect)
+            ctx.lineWidth = window.devicePixelRatio * 0.8;
+            let connectionDistance = dynamicRadius * 0.35; // Umbral para conectar nodos
+
+            // Optimización: Solo iterar algunas partículas para conectar
+            for (let i = 0; i < projected.length; i++) {
+                let p1 = projected[i];
+                if (p1.z < -0.2) continue; // No conectar las del fondo oscuro para mejor rendimiento
+                
+                for (let j = i + 1; j < projected.length; j++) {
+                    let p2 = projected[j];
+                    let dx = p1.px - p2.px;
+                    let dy = p1.py - p2.py;
+                    let dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < connectionDistance) {
+                        let alpha = (1 - (dist / connectionDistance)) * 0.3; // Desvanece línea por distancia
+                        // Profundidad afecta opacidad
+                        let depthAlpha = (p1.z + 1) / 2; 
+                        let finalAlpha = alpha * depthAlpha;
+                        
+                        if (state === "MUTED") finalAlpha *= 0.3;
+                        if (state === "THINKING") finalAlpha *= 1.5;
+
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${finalAlpha})`;
+                        ctx.moveTo(p1.px, p1.py);
+                        ctx.lineTo(p2.px, p2.py);
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            // Dibujar Nodos (Partículas)
+            projected.forEach(p => {
+                // Cálculo de luz/sombra basado en Z (Profundidad 3D simulada)
+                let depth = (p.z + 1) / 2; // Normalizado de 0 a 1
+                let alpha = 0.1 + depth * 0.9;
+                let size = (1.5 + depth * 2.5) * window.devicePixelRatio;
+                
+                // Efecto de reactividad para puntos
+                if (state === "SPEAKING") {
+                    size += currentVolume * 3 * window.devicePixelRatio;
+                }
+                
+                if (state === "MUTED") {
+                    alpha *= 0.4;
+                    size *= 0.8;
+                }
+
+                ctx.beginPath();
+                ctx.fillStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
+                ctx.arc(p.px, p.py, size, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Brillo extra para las partículas más frontales
+                if (depth > 0.85 && state !== "MUTED") {
+                    ctx.beginPath();
+                    ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.6})`;
+                    ctx.arc(p.px, p.py, size * 0.4, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        // ==========================================
+        // API BRIDGE (Para comunicación con PyQt)
+        // ==========================================
+
+        window.updateVolume = function(level) {
+            // Level suele venir de 0.0 a 1.0
+            targetVolume = Math.min(Math.max(level, 0), 1);
+        };
+
+        window.updateState = function(newState) {
+            state = newState;
+            const statusLabel = document.getElementById('stat-status');
+            
+            if (state === 'MUTED') {
+                targetVolume = 0;
+                document.documentElement.style.setProperty('--primary-glow', 'rgba(255, 51, 85, 0.1)');
+                themeColor = "#ff3355"; // Rojo si está silenciado
+                statusLabel.innerText = "STANDBY";
+            } else {
+                // Recupera el color del tema actual
+                let rootStyle = getComputedStyle(document.documentElement);
+                themeColor = rootStyle.getPropertyValue('--primary-fixed').trim();
+                document.documentElement.style.setProperty('--primary-glow', `rgba(${hexToRgb(themeColor).r}, ${hexToRgb(themeColor).g}, ${hexToRgb(themeColor).b}, 0.28)`);
+                statusLabel.innerText = state;
+            }
+        };
+
+        window.setThemeColors = function(colors) {
+            if(colors && colors.PRI) {
+                themeColor = colors.PRI;
+                document.documentElement.style.setProperty('--primary-fixed', colors.PRI);
+                document.documentElement.style.setProperty('--primary-fixed-dim', colors.PRI_DIM);
+                document.documentElement.style.setProperty('--primary-glow', `rgba(${hexToRgb(colors.PRI).r}, ${hexToRgb(colors.PRI).g}, ${hexToRgb(colors.PRI).b}, 0.28)`);
+                
+                document.getElementById('stat-sync').style.color = colors.PRI;
+                document.getElementById('stat-load').style.color = colors.PRI;
+                document.getElementById('stat-status').style.color = colors.PRI;
+            }
+        };
+
+        // Animación dinámica de los "stats" en pantalla para darle vida
+        setInterval(() => {
+            if (state !== "MUTED") {
+                let load = (Math.random() * 4 + 4).toFixed(1); // Oscila entre 4.0 y 8.0 ms
+                document.getElementById('stat-load').innerText = `${load} ms`;
+                
+                let sync = (98 + Math.random() * 1.9).toFixed(1);
+                document.getElementById('stat-sync').innerText = `${sync}%`;
+            }
+        }, 1500);
+
+        // Iniciar
+        resize();
+        initSphere();
+        animate();
+
+    </script>
+</body>
+</html>
+
+    <!-- Qt WebChannel Bridging -->
+   
